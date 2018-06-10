@@ -3,6 +3,22 @@ Public Class Form2
     Dim a As Boolean = False '判断运行状态
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         End
+    Dim A As Single,B As Single,C As Single
+    Dim R1 As Single,R2 As Single
+    A = Val(Text1.Text)
+    B = Val(Text2.Text)
+    C = Val(Text3.Text)
+If  B ^ 2 - 4 * A * C < 0 Then
+   MassageBox.Show "该方程无解."
+Else
+   If  B ^ 2 - 4 * A * C = 0 Then
+   R1 = -B / 2 / A
+   MassageBox.Show "该方程仅有一个根为" & R1 & "."
+Else
+   R1 = (-B + Sqr(B ^ 2 - 4 * A * C)) / (2 * A)
+   R2 = (-B - Sqr(B ^ 2 - 4 * A * C)) / (2 * A)
+MassageBox.Show "该方程有两个根分别为" & R1 & "和" & R2 & "."
+End If
     End Sub
 
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
