@@ -3,21 +3,6 @@ Public Class Form3
 
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         End
-      Dim a As Single, b As Single, c As Single
-      Dim d As Single, x1 As Single, x2 As Single
-      a = Text1
-      b = Text2
-      c = Text3
-      d = b * b - 4 * a * c
-  If  d >= 0 Then
-      x1 = (-b + Sqr(d)) / (2 * a)
-      x2 = (-b - Sqr(d)) / (2 * a)
-      Text4 = Format(x1, "0.##")
-      Text5 = Format(x2, "0.##")
-  Else
-    MassageBox.Show "在实数范围内无解"
-  End If
-
     End Sub
 
     Private Sub Button3_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button3.Click
