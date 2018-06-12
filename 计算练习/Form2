@@ -1,6 +1,17 @@
 Imports System.IO
 Public Class Form2
-    Dim a As Boolean = False '判断运行状态
+    Dim active As Boolean = False '判断运行状态
+    Dim a, b, c, d, f, g As Integer '二式常量,ax^2+bx+c=0,dx^2+fx+g=0
+    Dim x, y As Integer '未知数（答案）
+    Dim judge As Boolean '判断对错
+    Dim correct As Integer '正确题数
+    Dim wrong As Integer '错误题数
+    Dim collection As String '错题保存
+    Dim total As Integer '总题数
+    Dim equation(2) As String '题目1，题目2，合并
+    Dim m, s As Integer '数秒，m分s秒
+    Dim t(1) As String 'x^2/x之间的符号
+
     Private Sub Button2_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button2.Click
         End
     End Sub
@@ -11,6 +22,228 @@ Public Class Form2
     End Sub
 
     Private Sub Timer1_Tick(ByVal sender As Object, ByVal e As System.EventArgs) Handles Timer1.Tick
+        '判断运行
+        If active = True Then
+            '数秒
+            If m > 0 And s = 0 Then
+                m -= 1
+                s = 59
+            ElseIf s > 0 Then
+                s -= 1
+            ElseIf m = 0 And s = 0 Then
+                '检查正误，计数
+                check()
+                jump()
+            End If
+            '显示数秒
+            Label4.Text = m & ":" & s
+        End If
+        '最高运行次数
+        If total >= 20 Then
+            active = False
+            Timer1.Enabled = False
+            Label5.Text = "Finish"
+            Label1.Visible = False
+            Label2.Visible = False
+            Label5.Visible = True
+            Label6.Visible = True
+            If correct = 20 Then '评分
+                Label6.Text = "等级：SSS" & vbNewLine & "全对！太棒了！"
+            ElseIf correct = 19 Then
+                Label6.Text = "等级：SS" & vbNewLine & "几乎全对！非常好！"
+            ElseIf correct = 18 Then
+                Label6.Text = "等级：S" & vbNewLine & "对了大半！非常不错！"
+            ElseIf correct >= 16 Then
+                Label6.Text = "等级：A" & vbNewLine & "做的不错！值得鼓励！"
+            ElseIf correct >= 13 Then
+                Label6.Text = "等级：B" & vbNewLine & "需要练习才能做的更好！"
+            ElseIf correct >= 10 Then
+                Label6.Text = "等级：C" & vbNewLine & "反应太慢还是错的太多？"
+            Else
+                Label6.Text = "等级：D" & vbNewLine & "没睡醒吗？再来一次吧！"
+            End If
+            MessageBox.Show("完成测试！")
+            '存错题
+            If wrong > 0 Then
+                SaveFileDialog1.Filter = "Text Files(.txt)|*.txt|Documents(.doc)|*.doc|All files|*.*"
+                SaveFileDialog1.FileName = "二元一次错题" & Format(Now, "yyyy-MM-dd_hh-mm-ss") & ".txt"
+                If SaveFileDialog1.ShowDialog() = Windows.Forms.DialogResult.OK Then
+                    Dim a As StreamWriter
+                    a = New StreamWriter(SaveFileDialog1.FileName)
+                    a.WriteLine(Format(Now, "yyyy-MM-dd_hh-mm-ss"))
+                    a.WriteLine("以下是此次的错题，改正它们吧！")
+                    a.Write(collection)
+                    a.Close()
+                    MsgBox("错题保存成功", MsgBoxStyle.Exclamation, "保存错题")
+                Else
+                    MsgBox("错题保存失败", MsgBoxStyle.Exclamation, "保存错题")
+                End If
+            End If
+            Label1.Text = "Set!"
+            Label2.Text = "Set!"
+        End If
+        '显示正误详情
+        Label7.Text = "正确数：" & correct
+        Label8.Text = "错误数：" & wrong
+        Label9.Text = x & " " & a & " " & b & " " & c & " " & d & " " & f & " " & g & " " & active & " " & correct & " " & wrong & " " & equation(2) & " " & m & " " & s  '用于测试，各变量显示，此标签默认visible=false
+    End Sub
+    '开始测试
+    Public Sub begin()
+        Timer1.Enabled = True
+        active = True
+        correct = 0
+        wrong = 0
+        collection = ""
+        If ComboBox1.Text = "蜗牛" Then
+            m = 10
+            s = 0
+        ElseIf ComboBox1.Text = "极易" Then
+            m = 5
+            s = 0
+        ElseIf ComboBox1.Text = "易" Then
+            m = 3
+            s = 0
+        ElseIf ComboBox1.Text = "中" Then
+            m = 2
+            s = 0
+        ElseIf ComboBox1.Text = "难" Then
+            m = 1
+            s = 0
+        ElseIf ComboBox1.Text = "地狱" Then
+            m = 0
+            s = 30
+        End If
+        wrong = 0
+        total = -1
+        Label1.Visible = True
+        Label2.Visible = True
+        Label4.Visible = True
+        Label5.Visible = False
+        Label6.Visible = False
+        Label7.Visible = True
+        Label8.Visible = True
+        Label10.Visible = True
+        ComboBox1.Visible = False
+        TextBox1.Focus()
+    End Sub
+    '检查正误，计数
+    Private Sub check()
+        If active = True Then
+            If total = -1 Then
+            Else
+                If TextBox1.Text = "" Then
+                    If TextBox2.Text = "" Then
+                        wrong += 1
+                        collection = collection & vbNewLine & equation(2) & vbNewLine & "你的答案：空白"
+                    Else
+                        wrong += 1
+                        collection = collection & vbNewLine & equation(2) & vbNewLine & "你的答案：x=null;y=" & TextBox2.Text
+                    End If
+                ElseIf Val(TextBox1.Text) = x Then
+                    If TextBox2.Text = "" Then
+                        wrong += 1
+                        collection = collection & vbNewLine & equation(2) & vbNewLine & "你的答案：x=" & TextBox1.Text & ";y=null"
+                    ElseIf Val(TextBox2.Text) = y Then
+                        correct += 1
+                    End If
+                Else
+                    wrong += 1
+                    collection = collection & vbNewLine & equation(2) & vbNewLine & "你的答案：x=" & TextBox1.Text & ";y=" & TextBox2.Text
+                End If
+            End If
+        Else
+        End If
+    End Sub
+    '下一题
+    Public Sub jump()
+        x = Int(-50 + 100 * Rnd())
+        y = Int(-50 + 100 * Rnd())
+        a = Int(-20 + 41 * Rnd())
+        b = Int(1 + 20 * Rnd())
+        d = Int(-20 + 41 * Rnd())
+        f = Int(1 + 20 * Rnd())
+        t(0) = Int(2 * Rnd())
+        t(1) = Int(2 * Rnd())
+        Do While a / d = b / f
+            d = Int(1 + 10 * Rnd())
+            f = Int(1 + 30 * Rnd())
+        Loop
+        't=0为加
+        If t(0) = 0 Then
+            c = -(a * x + b * y)
+            equation(0) = a & "x + " & b & "y = " & -c
+        Else
+            c = -(a * x - b * y)
+            equation(0) = a & "x - " & b & "y = " & -c
+        End If
+        If t(1) = 0 Then
+            g = -(d * x + f * y)
+            equation(1) = d & "x + " & f & "y = " & -g
+        Else
+            g = -(d * x - f * y)
+            equation(1) = d & "x + " & f & "y = " & -g
+        End If
+        equation(2) = equation(0) & vbNewLine & equation(1) & vbNewLine & "x=" & x & vbNewLine & "y=" & y
+        total += 1
+        If ComboBox1.Text = "蜗牛" Then
+            m = 10
+            s = 0
+        ElseIf ComboBox1.Text = "极易" Then
+            m = 5
+            s = 0
+        ElseIf ComboBox1.Text = "易" Then
+            m = 3
+            s = 0
+        ElseIf ComboBox1.Text = "中" Then
+            m = 2
+            s = 0
+        ElseIf ComboBox1.Text = "难" Then
+            m = 1
+            s = 0
+        ElseIf ComboBox1.Text = "地狱" Then
+            m = 0
+            s = 30
+        End If
+        TextBox1.Text = ""
+        TextBox2.Text = ""
+        Label1.Text = equation(0)
+        Label2.Text = equation(1)
+    End Sub
+    Private Sub TextBox1_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox1.KeyPress
+        If e.KeyChar = Chr(13) Then
+            TextBox2.Focus()
+        End If
+    End Sub
 
+    Private Sub Button1_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button1.Click
+        begin()
+    End Sub
+
+    Private Sub Button4_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles Button4.Click
+        active = False
+        Timer1.Enabled = False
+        ComboBox1.Visible = True
+        Label1.Visible = False
+        Label2.Visible = False
+        Label4.Visible = False
+        Label5.Visible = True
+        Label6.Visible = False
+        Label7.Visible = False
+        Label8.Visible = False
+        Label10.Visible = False
+        Label1.Text = "Set!"
+        Label2.Text = "Set!"
+        Label4.Text = "-:-"
+    End Sub
+
+    Private Sub TextBox2_KeyPress(ByVal sender As Object, ByVal e As System.Windows.Forms.KeyPressEventArgs) Handles TextBox2.KeyPress
+        If e.KeyChar = Chr(13) Then
+            If active = True Then
+                check()
+                jump()
+            Else
+            End If
+            TextBox1.Focus()
+        End If
     End Sub
 End Class
