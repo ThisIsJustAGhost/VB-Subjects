@@ -1,7 +1,7 @@
 Imports System.IO
 Public Class Form2
     Dim active As Boolean = False '判断运行状态
-    Dim a, b, c, d, f, g As Integer '二式常量,ax^2+bx+c=0,dx^2+fx+g=0
+    Dim a, b, c, d, f, g As Integer '二式常量,ax+by+c=0,dx+fy+g=0
     Dim x, y As Integer '未知数（答案）
     Dim judge As Boolean '判断对错
     Dim correct As Integer '正确题数
